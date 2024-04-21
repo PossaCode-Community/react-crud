@@ -22,7 +22,7 @@ function App() {
 
   const addTask = (content: string) => {
     const newTask = {
-      id: crypto.randomUUID(),
+      id: self.crypto.randomUUID(),
       title: content,
       isCompleted: false,
     };
@@ -42,8 +42,31 @@ function App() {
     );
   };
 
+
+  const editTask = (id: string ) => {
+ 
+    const taskToEdit = tasks.find(task => task.id === id);
+
+    if(!taskToEdit)return ;
+
+    const newTitle = prompt("Entrer une nouvelle tashe ", taskToEdit.title)
+
+    
+    if (newTitle === null || newTitle.trim() === "") return ;
+    // Mettre à jour le titre de la tâche dans la liste des tâches
+    setTasks((prevTasks) =>
+      
+      prevTasks.map((task) => 
+        task.id === id ? {...tasks, title : newTitle} : task
+      )
+    );
+ 
+  };
+
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const formElement = e.target as HTMLFormElement;
 
     const formData = new FormData(formElement);
@@ -58,9 +81,8 @@ function App() {
   return (
     <div className="container space-y-12">
       <h1 className="text-center text-3xl font-semibold">Todo App</h1>
-
       <form
-        onSubmit={handleSubmit}
+        onSubmit={(even) => handleSubmit(even)}
         className="mx-auto max-w-prose flex items-center">
         <input
           className="border border-gray-400 outline-none focus:ring-1 "
@@ -76,6 +98,7 @@ function App() {
         {tasks.map((task) => {
           return (
             <li key={task.id} className="flex space-x-4 items-center">
+
               <input
                 type="checkbox"
                 checked={task.isCompleted}
@@ -84,15 +107,25 @@ function App() {
               <p className={task.isCompleted ? "italic line-through" : ""}>
                 {task.title}
               </p>
+              
               <button
                 onClick={() => deleteTask(task.id)}
                 type="button"
                 className="px-2 bg-red-600 text-white">
                 x
               </button>
+
+              <button
+                onClick={()=>editTask(task.id)}
+                type="button"
+                className="px-2 bg-blue-600 text-white">
+                edite
+              </button>
+
             </li>
           );
         })}
+
       </ul>
     </div>
   );
